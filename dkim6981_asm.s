@@ -25,7 +25,7 @@
 
     .type   dkim6981_add_test, %function   @ Declares that the symbol is a function (not strictly required)
 
-@ Function Declaration : int dkim6981_add_test (int x, int y)
+@ Function Declaration : int dkim6981_add_test (int x, int y, int delay)
 @
 @ Input: r0, r1 (i.e. r0 holds x, r1 holds y)
 @ Returns: r0
@@ -39,8 +39,8 @@ dkim6981_add_test:
     add r0, r0, r1                  @ r0 = r0 + r1
 
     push {r0}                       @ Store the result of addition on stack
-    ldr r0, =0xFFFFFF               @ Assign the value inro r0
-    bl busy_delay                   @ Call busy_delay(0xFFFFFFF)
+    mov r0, r2                      @ Copy the delay value from r2 into r0
+    bl busy_delay                   @ Call busy_delay(delay)
     pop {r0}                        @ Restore the addition result from stack
 
     pop {lr}                        @ Restore the original retrun address from stack
@@ -57,18 +57,18 @@ dkim6981_add_test:
 @ Here is the actual function. DO NOT MODIFY THIS FUNCTION.
 busy_delay:
 
-    push {r6}
+    push {r6}                       @ Store the original r6 value on stack
 
-    mov r6, r0
+    mov r6, r0                      @ Copy the delay value from r0 into r6
 
 delay_label:
-    subs r6, r6, #1
+    subs r6, r6, #1                 @ r6 = r6 - 1
 
-    bge delay_label
+    bge delay_label                 @ If r6 is greater than or equal to 0, keep looping
 
     mov r0, #0                      @ Always return zero (success)
 
-    pop {r6}
+    pop {r6}                        @ Restore the original r6 value from staack
 
     bx lr                           @ Return (Branch eXchange) to the address in the link register (lr)
 

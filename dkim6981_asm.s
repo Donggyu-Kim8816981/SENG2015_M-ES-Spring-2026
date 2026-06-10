@@ -34,8 +34,16 @@
 @ Here is the actual dkim6981_add_test function
 dkim6981_add_test:
 
-    add r0, r0, r1
+    push {lr}                       @ Store the original return address on stack
 
+    add r0, r0, r1                  @ r0 = r0 + r1
+
+    push {r0}                       @ Store the result of addition on stack
+    ldr r0, =0xFFFFFF               @ Assign the value inro r0
+    bl busy_delay                   @ Call busy_delay(0xFFFFFFF)
+    pop {r0}                        @ Restore the addition result from stack
+
+    pop {lr}                        @ Restore the original retrun address from stack
     bx lr                           @ Return (Branch eXchange) to the address in the link register (lr) 
 
     .size   dkim6981_add_test, .- dkim6981_add_test @@ - symbol size (makes the debugger happy)

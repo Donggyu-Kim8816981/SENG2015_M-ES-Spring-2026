@@ -84,6 +84,20 @@ dkim6981_add_test:
 
     .size   dkim6981_add_test, .- dkim6981_add_test @@ - symbol size (makes the debugger happy)
 
+.global dkim6981_string_test
+
+@ Function Declaration : int dkim6981_string_test(char *p)
+@
+@ Input: r0 (i.e. r0 a pointer to a byte array)
+@ Returns: r0
+@ 
+
+@ Here is the actual function
+dkim6981_string_test:
+
+    bx lr
+    .size   dkim6981_string_test, .-dkim6981_string_test
+
 @ Function Declaration : int busy_delay(int cycles)
 @
 @ Input: r0 (i.e. r0 holds number of cycles to delay)

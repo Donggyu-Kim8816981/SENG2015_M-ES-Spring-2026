@@ -64,6 +64,7 @@ void dkim6981_StringTest(int action)
 
   if (fetch_status) {
     // Default logic goes here
+    destptr = "TESTING";
   }
 
   printf("string_test returned: %d\n", dkim6981_string_test(destptr) );

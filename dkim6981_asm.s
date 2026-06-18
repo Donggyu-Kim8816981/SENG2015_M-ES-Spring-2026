@@ -95,7 +95,16 @@ dkim6981_add_test:
 @ Here is the actual function
 dkim6981_string_test:
 
+StringLoop:
+    ldrb r1, [r0]   @ Load the value pointed to by R0 into R1 as shown above
+    cmp r1, #0      @ Check if that value is zero – if it is, branch out
+    beq OutLabel    @ If the value is, branch out
+    add r0, r0, #1  @ Otherwise, Add one to R0
+    b StringLoop    @ Branch back to string loop
+
+OutLabel:
     bx lr
+
     .size   dkim6981_string_test, .-dkim6981_string_test
 
 @ Function Declaration : int busy_delay(int cycles)

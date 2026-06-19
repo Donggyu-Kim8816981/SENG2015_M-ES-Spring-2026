@@ -84,6 +84,68 @@ dkim6981_add_test:
 
     .size   dkim6981_add_test, .- dkim6981_add_test @@ - symbol size (makes the debugger happy)
 
+@@ Function Header Block
+    .align  2               @ Code alignment is 2^n alignment (n=2)
+    .syntax unified         @ Sets the instruction set to the unified ARM + THUMB
+    .global dkim6981_a2     @ Make the symbol name for the function visible to the linker
+    .code   16              @ 16bit THUMB code (BOTH .code and .thumb_func are required)
+    .thumb_func             @ Specifies that the following symbol is the name of a THUMB
+    .type   dkim6981_a2, %function   @ Declares that the symbol is a function (not strictly required)
+
+@ Function Declaration : int dkim6981_a2 (int num, int wait)
+@
+@ Input: r0 = num / number of full LED toggle cycles.
+@        r1 = wait / delay value between each LED toggle.
+@ Returns: r0 = total number of BSP_LED_Toggle calls
+@ 
+
+@ Here is the assignment 2 assembly function
+dkim6981_a2:
+
+    @ Fill in the necessary logic here
+    push {r4, r5, r6, r7, lr}   @ Save r4, r5, r6, r7, and lr (return address) on the stack.
+
+    mov r4, r0          @ Copy r0 (num = number of full cycles) into r4.
+    mov r5, r1          @ Copy r1 (wait = delay value between each LED toggle) into r5.
+    mov r6, #0          @ Copy constant 0 into r6 (Initializes the total toggle count to zero).
+
+@ Outer loop for repeating full LED cycles.
+OuterLoop:     
+    cmp r4, #0          @ Compare r4 (num) with 0 to check if any cycles remain.
+    beq Done            @ Branch to 'Done' if r4 equals 0.
+
+    mov r7, #0          @ Copy constant 0 into r7 (LED index starts at LED0).
+
+@ Inner loop for toggling LEDs 0 through 7.
+InnerLoop:
+    cmp r7, #8          @ Compare r7 with 8 to check if all LEDs have been toggled.
+    beq EndInnerLoop    @ Branch to 'EndInnerLoop' if r7 equals 8 (bcuz the last index of LED is 7).
+
+    mov r0, r7          @ Copy the current LED index from r7 into r0.
+    bl BSP_LED_Toggle   @ Call 'BSP_LED_Toggle' to toggle the selected LED.
+
+    mov r0, r5          @ Copy the delay value from r5 (wait) into r0.
+    bl busy_delay       @ Call 'busy_delay' to create a delay between LED toggles.
+
+    add r6, r6, #1      @ Add 1 to r6 to increase the total toggle count (r6 = r6 + 1).
+    add r7, r7, #1      @ Add 1 to r7 to move the next LED index (r7 = r7 + 1).
+    b InnerLoop         @ Branch back to 'InnerLoop' to continue toggling LEDs.
+
+@ End of one complete LED cycle.
+EndInnerLoop:
+    sub r4, r4, #1      @ Subtract 1 from r4 because one full cycle has been completed (r4 = r4 - 1).
+    b OuterLoop         @ Branch back to 'OuterLoop' to repeat the next cycle.
+
+@ Function completion and return value setup.
+Done:
+    mov r0, r6          @ Copy the total toggle count from r6 into r0 as the return value.
+
+    pop {r4, r5, r6, r7, lr}    @ Restore the original values of r4, r5, r6, r7, and lr from the stack.
+    bx lr                       @ Return (Branch eXchange) to the address held by the lr 
+
+    .size   dkim6981_a2, .- dkim6981_a2    @@ - symbol size (makes the debugger happy)
+
+
 .global dkim6981_string_test
 
 @ Function Declaration : int dkim6981_string_test(char *p)
